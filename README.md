@@ -2,6 +2,35 @@
 
 A CLI tool that reads an `.epub`, sends each chapter to an LLM, and builds a single HTML report with concise chapter summaries based on the book's table of contents.
 
+## Demo
+
+You can check out the demo [here](https://m-danya.github.io/epub-summarizer/).
+This HTML was generated with the following command:
+
+```bash
+m-danya ~/code/epub-summarizer$ uv run epub-summarizer "Тьюринг А._Может ли машина мыслить.epub" --limit 10
+Selected model: qwen3.5-9b-uncensored-hauhaucs-aggressive@q4_k_m
+Summary language: ru
+Parallel requests: 4
+Chapters found in book: 19
+Processing the first 10 chapters.
+Largest chapter: "IV. Цифровые вычислительные машины". Chapter size: 9105 characters, ~2220 tokens.
+Estimated full prompt size for that chapter: ~2295 tokens.
+The model is not recognized by `tiktoken`, so the approximate `o200k_base` encoding was used.
+Press Enter to continue, or Ctrl+C to cancel...
+[1/10] Summarizing: Алан Тьюринг Могут ли машины мыслить?
+[2/10] Summarizing: I. Игра в имитацию
+[3/10] Summarizing: II. Критика новой постановки проблемы
+[4/10] Summarizing: III. Машины, привлекаемые к игре
+[5/10] Summarizing: IV. Цифровые вычислительные машины
+[6/10] Summarizing: V. Универсальность цифровых вычислительных машин
+[7/10] Summarizing: VI. Противоположные точки зрения по основному вопросу
+[8/10] Summarizing: 1. Теологическое возражение
+[9/10] Summarizing: 2. Возражение со «страусиной» точки зрения
+[10/10] Summarizing: 3. Математическое возражение
+HTML report saved: /home/m-danya/code/epub-summarizer/Тьюринг А._Может ли машина мыслить.html
+```
+
 ### Vibecoding notice
 
 This project is vibecoded without any code review.
