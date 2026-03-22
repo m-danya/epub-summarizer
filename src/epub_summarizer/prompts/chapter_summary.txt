@@ -1,0 +1,7 @@
+Write a brief summary of this book chapter.
+
+Requirements:
+- Return only a list.
+- Each bullet should describe one idea from the chapter.
+- Do not omit important ideas.
+- Keep it short, with no introduction or conclusion.

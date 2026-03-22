@@ -1,0 +1,23 @@
+[project]
+name = "epub-summarizer"
+version = "0.1.0"
+description = "CLI tool for turning EPUB books into chapter-by-chapter HTML summaries."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "ebooklib>=0.18",
+    "openai>=1.68.2",
+    "pydantic-settings>=2.8.1",
+    "tiktoken>=0.9.0",
+]
+
+[project.scripts]
+epub-summarizer = "epub_summarizer.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/epub_summarizer"]
