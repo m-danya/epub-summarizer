@@ -28,7 +28,7 @@ Press Enter to continue, or Ctrl+C to cancel...
 [8/10] Summarizing: 1. Теологическое возражение
 [9/10] Summarizing: 2. Возражение со «страусиной» точки зрения
 [10/10] Summarizing: 3. Математическое возражение
-HTML report saved: /home/m-danya/code/epub-summarizer/Тьюринг А._Может ли машина мыслить.html
+HTML report saved: /home/m-danya/code/epub-summarizer/Тьюринг А._Может ли машина мыслить_qwen3.5-9b-uncensored-hauhaucs-aggressive_q4_k_m_123e4567-e89b-12d3-a456-426614174000.html
 ```
 
 ### Vibecoding notice
@@ -61,7 +61,9 @@ not set, the program queries `/models` and uses the first available model.
 uv run epub-summarizer path/to/book.epub
 ```
 
-To extract the plain text of the N-th extracted chapter without calling the LLM:
+HTML reports are saved as `./{book_stem}_{normalized_model_name}_{uuid}.html`.
+
+To extract the plain text of the N-th extracted chapter (without calling the LLM):
 
 ```bash
 uv run epub-summarizer path/to/book.epub --extract-chapter 5

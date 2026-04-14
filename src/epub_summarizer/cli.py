@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import re
 from importlib.resources import files
 from pathlib import Path
 from uuid import uuid4
@@ -89,7 +90,6 @@ def run(
     except ValidationError as error:
         raise SystemExit(f"Failed to load settings from `.env`: {error}") from error
 
-    output_path = Path.cwd() / f"{epub_file.stem}.html"
     prompt = _load_prompt()
 
     if limit is not None:
@@ -103,6 +103,10 @@ def run(
     finally:
         client.close()
 
+    output_path = Path.cwd() / _build_report_file_name(
+        book_stem=epub_file.stem,
+        model_name=model_name,
+    )
     largest_chapter = max(chapters, key=lambda chapter: len(chapter.content))
     largest_chapter_estimate = estimate_tokens(largest_chapter.content, model_name)
     largest_prompt_estimate = estimate_tokens(
@@ -199,6 +203,17 @@ def _extract_chapter_to_file(*, chapters: list[Chapter], chapter_number: int) ->
     print(f"Extracted chapter [{chapter_number}/{len(chapters)}]: {chapter.title}")
     print(f"Chapter text saved: {output_path}")
     return output_path
+
+
+def _build_report_file_name(*, book_stem: str, model_name: str) -> str:
+    normalized_model_name = _normalize_for_file_name(model_name)
+    return f"{book_stem}_{normalized_model_name}_{uuid4()}.html"
+
+
+def _normalize_for_file_name(value: str) -> str:
+    normalized = re.sub(r"[^0-9A-Za-z._-]+", "_", value.strip())
+    normalized = re.sub(r"_+", "_", normalized).strip("._-")
+    return normalized or "model"
 
 
 def _load_prompt() -> str:
