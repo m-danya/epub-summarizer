@@ -61,6 +61,15 @@ not set, the program queries `/models` and uses the first available model.
 uv run epub-summarizer path/to/book.epub
 ```
 
+To extract the plain text of the N-th extracted chapter without calling the LLM:
+
+```bash
+uv run epub-summarizer path/to/book.epub --extract-chapter 5
+```
+
+This saves the chapter text to `./extracted_chapter_{uuid}_5.txt` and prints the
+full path to the saved file.
+
 To explicitly set the summary language:
 
 ```bash

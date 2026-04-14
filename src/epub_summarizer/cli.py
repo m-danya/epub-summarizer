@@ -4,6 +4,7 @@ import argparse
 import asyncio
 from importlib.resources import files
 from pathlib import Path
+from uuid import uuid4
 
 from pydantic import ValidationError
 
@@ -27,10 +28,16 @@ def main() -> None:
         description="Generate an HTML summary report for an EPUB file.",
     )
     parser.add_argument("epub_file", type=Path, help="Path to the .epub file")
-    parser.add_argument(
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument(
         "--limit",
         type=_positive_int,
         help="Summarize only the first N chapters.",
+    )
+    mode_group.add_argument(
+        "--extract-chapter",
+        type=_positive_int,
+        help="Save the text of the 1-based N-th extracted chapter to a `.txt` file.",
     )
     parser.add_argument(
         "--summary-language",
@@ -47,6 +54,7 @@ def main() -> None:
     args = parser.parse_args()
     run(
         args.epub_file,
+        extract_chapter=args.extract_chapter,
         limit=args.limit,
         parallel_requests_num=args.parallel_requests_num,
         summary_language=args.summary_language,
@@ -56,6 +64,7 @@ def main() -> None:
 def run(
     epub_file: Path,
     *,
+    extract_chapter: int | None = None,
     limit: int | None = None,
     parallel_requests_num: int = 4,
     summary_language: str = "ru",
@@ -67,6 +76,14 @@ def run(
     if epub_file.suffix.lower() != ".epub":
         raise SystemExit(f"Expected a `.epub` file, got: {epub_file.name}")
 
+    chapters = extract_chapters(epub_file)
+    total_chapters_in_book = len(chapters)
+    if extract_chapter is not None:
+        return _extract_chapter_to_file(
+            chapters=chapters,
+            chapter_number=extract_chapter,
+        )
+
     try:
         settings = Settings()
     except ValidationError as error:
@@ -74,8 +91,7 @@ def run(
 
     output_path = Path.cwd() / f"{epub_file.stem}.html"
     prompt = _load_prompt()
-    chapters = extract_chapters(epub_file)
-    total_chapters_in_book = len(chapters)
+
     if limit is not None:
         chapters = chapters[:limit]
         if not chapters:
@@ -167,6 +183,21 @@ def run(
     if interrupt_message is not None:
         raise SystemExit(130)
 
+    return output_path
+
+
+def _extract_chapter_to_file(*, chapters: list[Chapter], chapter_number: int) -> Path:
+    if chapter_number > len(chapters):
+        raise SystemExit(
+            "Chapter index out of range: "
+            f"{chapter_number}. Available chapters: 1-{len(chapters)}."
+        )
+
+    chapter = chapters[chapter_number - 1]
+    output_path = Path.cwd() / f"extracted_chapter_{uuid4()}_{chapter_number}.txt"
+    output_path.write_text(chapter.content, encoding="utf-8")
+    print(f"Extracted chapter [{chapter_number}/{len(chapters)}]: {chapter.title}")
+    print(f"Chapter text saved: {output_path}")
     return output_path
 
 
